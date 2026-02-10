@@ -1,46 +1,129 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>לזכרו של יקירנו</title>
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #f9f9f9; color: #333; line-height: 1.6; }
-        header { background: #2c3e50; color: white; padding: 60px 20px; text-align: center; }
-        .profile-img { width: 180px; height: 180px; border-radius: 50%; border: 5px solid white; object-fit: cover; margin-bottom: 20px; }
-        main { max-width: 800px; margin: -40px auto 40px; background: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        h1 { margin: 0; font-size: 2.5em; }
-        .dates { font-style: italic; color: #bdc3c7; margin-bottom: 30px; }
-        section { margin-bottom: 40px; }
-        h2 { border-bottom: 2px solid #eee; padding-bottom: 10px; color: #2c3e50; }
-        footer { text-align: center; padding: 20px; font-size: 0.9em; color: #7f8c8d; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>לזכרו של יקירנו</title>
+
+  <!-- Fonts (safe to use on GitHub Pages) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-<nav style="background: #2c3e50; padding: 40px 20px; text-align: center;">
-    <a href="index.html" style="color: white; text-decoration: none; margin: 0 15px;">דף הבית</a>
-    <a href="photos.html" style="color: white; text-decoration: none; margin: 0 15px;">תמונות</a>
-</nav>
-<header>
-    <h1>שם המנוח/ה</h1>
-    <div class="dates">1938 – 2026</div>
-</header>
 
-<main>
-    <section>
+  <nav class="nav">
+    <div class="container nav-inner">
+      <a class="brand" href="index.html" aria-label="דף הבית">
+        <span class="brand-dot" aria-hidden="true"></span>
+        <span>אתר הנצחה</span>
+      </a>
+
+      <div class="nav-links" role="navigation" aria-label="ניווט ראשי">
+        <a class="link active" href="index.html">דף הבית</a>
+        <a class="link" href="photos.html">תמונות</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="container">
+      <div class="hero-card">
+        <div class="avatar" aria-label="תמונת פרופיל">
+          <!-- החלף/י לתמונה המתאימה שלך -->
+          <img src="photo_num1.jpg" alt="תמונה של יקירנו" />
+        </div>
+
+        <div class="hero-title">
+          <h1>שם המנוח/ה</h1>
+
+          <div class="dates">
+            <span class="badge"><i aria-hidden="true"></i> 1938 – 2026</span>
+            <span class="badge"><i aria-hidden="true"></i> ״יהי זכרו/ה ברוך״</span>
+          </div>
+
+          <div class="actions">
+            <a class="btn" href="#life">סיפור חיים</a>
+            <a class="btn" href="#memories">דברים לזכרו/ה</a>
+            <a class="btn" href="photos.html">גלריית תמונות</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container grid">
+
+      <section id="life" class="card">
         <h2>סיפור חיים</h2>
-        <p>כאן תוכל לכתוב על התחנות המרכזיות בחייו/ה, על האופי, והמורשת שהשאיר/ה אחריו/ה.</p>
-    </section>
+        <p>
+          כאן תוכל/י לכתוב על התחנות המרכזיות בחייו/ה — ילדות, שירות, עבודה, משפחה, תחביבים,
+          ומה שהפך אותו/ה לאדם שהכירו ואהבו.
+        </p>
 
-    <section>
+        <div class="quote" style="margin-top:16px">
+          האדם אינו אלא תבנית נוף מולדתו…
+          <small>— אפשר להחליף לציטוט אישי/משפחתי</small>
+        </div>
+
+        <div class="actions">
+          <a class="btn" href="photos.html">צפה/י בתמונות</a>
+          <a class="btn" href="#timeline">ציר זמן</a>
+        </div>
+      </section>
+
+      <aside class="card" id="timeline">
+        <h2>ציר זמן (דוגמה)</h2>
+        <ul class="timeline">
+          <li>
+            <div class="year">1938</div>
+            <div class="desc">נולד/ה ב־_____.</div>
+          </li>
+          <li>
+            <div class="year">1960</div>
+            <div class="desc">נקודת ציון משמעותית (לימודים / שירות / מעבר עיר).</div>
+          </li>
+          <li>
+            <div class="year">1990</div>
+            <div class="desc">משפחה, קריירה, עשייה קהילתית או תחביב מרכזי.</div>
+          </li>
+          <li>
+            <div class="year">2026</div>
+            <div class="desc">הותיר/ה אחריו/ה מורשת של _____.</div>
+          </li>
+        </ul>
+      </aside>
+
+      <section id="memories" class="card" style="grid-column: 1 / -1;">
         <h2>דברים לזכרו/ה</h2>
-        <p>"האדם אינו אלא תבנית נוף מולדתו..." - כאן ניתן להוסיף הספדים, שירים או זיכרונות מחברים.</p>
-    </section>
-</main>
+        <p>
+          כאן אפשר להוסיף הספדים, זיכרונות מחברים ומשפחה, קטעים מהלוויה, שירים, תפילה,
+          וכל דבר שתרצה/י לשמר לדורות.
+        </p>
 
-<footer>
-    <p>יהי זיכרה ברוך</p>
-</footer>
+        <div class="quote" style="margin-top:16px">
+          ״תכתוב/י כאן משפט קצר שמייצג אותו/ה…״
+          <small>— שם הכותב/ת (אופציונלי)</small>
+        </div>
+
+        <p style="margin-top:16px">
+          אם תרצה/י להוסיף טופס לכתיבת זיכרונות — אפשר לשלב Google Form/Notion public page,
+          או ליצור עמוד "ספר אורחים" סטטי.
+        </p>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="small">© אתר הנצחה · כל הזכויות שמורות למשפחה</div>
+      <div class="mini">נבנה עם GitHub Pages · RTL מותאם לנייד</div>
+    </div>
+  </footer>
 
 </body>
 </html>
