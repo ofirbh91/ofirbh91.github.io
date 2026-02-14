@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>זיכרונות - ספר זיכרון</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../assets/css/style.css" />
+  <style>
+    .page { max-width: 980px; margin: 32px auto; padding: 0 16px; direction: rtl; text-align: right; }
+    .memories-list { display: grid; gap: 14px; margin-top: 16px; }
+    .memory-card { border: 1px solid rgba(0,0,0,.08); border-radius: 14px; padding: 16px; background: #fff; box-shadow: 0 6px 18px rgba(0,0,0,.06); }
+    .memory-text { font-size: 1.05rem; line-height: 1.7; }
+    .memory-meta { margin-top: 10px; font-size: .95rem; opacity: .75; }
+    .memory-name { font-weight: 700; }
+    .status { opacity:.75; }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <div class="container nav-inner">
+      <a class="brand" href="../index.html" aria-label="דף הבית">
+        <span class="brand-dot" aria-hidden="true"></span>
+        <span>אתר הנצחה</span>
+      </a>
+
+      <div class="nav-links" role="navigation" aria-label="ניווט ראשי">
+        <a class="link" href="../index.html">דף הבית</a>
+        <a class="link" href="photos.html">תמונות</a>
+        <a class="link active" href="memories.html">זיכרונות</a>
+        <a class="link" href="guestbook.html">כתיבת זיכרון</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="page">
+    <h1 style="margin: 18px 0 8px;">זיכרונות</h1>
+    <p class="status" id="memoriesStatus">טוען זיכרונות…</p>
+    <div id="memoriesList" class="memories-list"></div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="small">© אתר הנצחה · זיכרונות</div>
+      <div class="mini">מוצגים רק זיכרונות שאושרו לפרסום</div>
+    </div>
+  </footer>
+
+  <script>
+    // הדבק כאן את ה-URL של ה-Web App (Google Apps Script) שמחזיר JSON
+    const ENDPOINT = "REPLACE_WITH_YOUR_JSON_ENDPOINT";
+
+    function escapeHtml(s) {
+      return (s || '').replace(/[&<>"']/g, m => ({
+        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+      }[m]));
+    }
+
+    async function loadMemories() {
+      const status = document.getElementById('memoriesStatus');
+      const list = document.getElementById('memoriesList');
+
+      try {
+        if (!ENDPOINT || ENDPOINT.includes("REPLACE_WITH")) {
+          status.textContent = "יש להגדיר ENDPOINT כדי להציג זיכרונות.";
+          return;
+        }
+
+        const res = await fetch(ENDPOINT, { cache: "no-store" });
+        if (!res.ok) throw new Error("Network error");
+
+        const data = await res.json();
+        const items = (data && data.items) || [];
+
+        if (!items.length) {
+          status.textContent = "עדיין אין זיכרונות מאושרים להצגה.";
+          return;
+        }
+
+        status.textContent = "";
+        list.innerHTML = items.map(x => `
+          <article class="memory-card">
+            <div class="memory-text">${escapeHtml(x.memory).replace(/\n/g,'<br>')}</div>
+            <div class="memory-meta">
+              <span class="memory-name">${escapeHtml(x.name || 'אנונימי')}</span>
+              ${x.relation ? `<span class="memory-rel">• ${escapeHtml(x.relation)}</span>` : ''}
+            </div>
+          </article>
+        `).join('');
+
+      } catch (e) {
+        status.textContent = "לא הצלחנו לטעון את הזיכרונות כרגע.";
+      }
+    }
+
+    loadMemories();
+  </script>
+
+</body>
+</html>

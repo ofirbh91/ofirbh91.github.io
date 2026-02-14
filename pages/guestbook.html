@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>כתיבת זיכרון - ספר זיכרון</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../assets/css/style.css" />
+  <style>
+    .page { max-width: 980px; margin: 32px auto; padding: 0 16px; direction: rtl; text-align: right; }
+    .embed-wrap { display:flex; justify-content:center; }
+    .embed-wrap iframe { width: 100%; max-width: 900px; height: 900px; border: 0; border-radius: 14px; box-shadow: 0 10px 28px rgba(0,0,0,.10); background: #fff; }
+    .note { opacity:.8; line-height:1.7; }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <div class="container nav-inner">
+      <a class="brand" href="../index.html" aria-label="דף הבית">
+        <span class="brand-dot" aria-hidden="true"></span>
+        <span>אתר הנצחה</span>
+      </a>
+
+      <div class="nav-links" role="navigation" aria-label="ניווט ראשי">
+        <a class="link" href="../index.html">דף הבית</a>
+        <a class="link" href="photos.html">תמונות</a>
+        <a class="link" href="memories.html">זיכרונות</a>
+        <a class="link active" href="guestbook.html">כתיבת זיכרון</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="page">
+    <h1 style="margin: 18px 0 8px;">ספר זיכרון</h1>
+    <p class="note">
+      כאן ניתן לכתוב זיכרון / סיפור / ברכה. ההודעות עוברות אישור משפחה לפני שהן מוצגות באתר.
+    </p>
+
+    <div class="embed-wrap" style="margin-top: 18px;">
+      <!-- הדבק כאן את ה-src של ה-Embed מ-Google Forms -->
+      <iframe src="REPLACE_WITH_YOUR_GOOGLE_FORM_EMBED_URL" loading="lazy"></iframe>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="small">© אתר הנצחה · ספר זיכרון</div>
+      <div class="mini">תודה על השיתוף</div>
+    </div>
+  </footer>
+
+</body>
+</html>
