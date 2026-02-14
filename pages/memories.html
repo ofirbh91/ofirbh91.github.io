@@ -104,7 +104,7 @@ function loadMemories() {
           <article class="memory-card">
             <div class="memory-text">${escapeHtml(x.memory).replace(/\n/g,'<br>')}</div>
             <div class="memory-meta">
-              <span class="memory-name">${escapeHtml(x.name || 'אנונימי')}</span>
+              ${x.name ? `<span class="memory-name">${escapeHtml(x.name)}</span>` : ''}
               ${x.relation ? `<span class="memory-pill"><i aria-hidden="true"></i>${escapeHtml(x.relation)}</span>` : ''}
               ${x.timestamp ? `<span class="memory-pill"><i aria-hidden="true"></i>${escapeHtml(x.timestamp)}</span>` : ''}
               ${Object.entries(x)
