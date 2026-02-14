@@ -61,27 +61,25 @@
       }[m]));
     }
 
-    async function loadMemories() {
-      const status = document.getElementById('memoriesStatus');
-      const list = document.getElementById('memoriesList');
+function loadMemories() {
+  const status = document.getElementById('memoriesStatus');
+  const list = document.getElementById('memoriesList');
 
-      try {
-        if (!ENDPOINT || ENDPOINT.includes("REPLACE_WITH")) {
-          status.textContent = "יש להגדיר ENDPOINT כדי להציג זיכרונות.";
-          return;
-        }
+  try {
+    if (!ENDPOINT || ENDPOINT.includes("REPLACE_WITH")) {
+      status.textContent = "יש להגדיר ENDPOINT כדי להציג זיכרונות.";
+      return;
+    }
 
-        const res = await fetch(ENDPOINT, { cache: "no-store" });
-        if (!res.ok) throw new Error("Network error");
+    const cbName = "memories_cb_" + Date.now();
 
-        const data = await res.json();
-        const items = (data && data.items) || [];
+    // פונקציית callback שתיקרא ע"י השרת (JSONP)
+    window[cbName] = function (data) {
+      const items = (data && data.items) || [];
 
-        if (!items.length) {
-          status.textContent = "עדיין אין זיכרונות מאושרים להצגה.";
-          return;
-        }
-
+      if (!items.length) {
+        status.textContent = "עדיין אין זיכרונות מאושרים להצגה.";
+      } else {
         status.textContent = "";
         list.innerHTML = items.map(x => `
           <article class="memory-card">
@@ -92,11 +90,27 @@
             </div>
           </article>
         `).join('');
-
-      } catch (e) {
-        status.textContent = "לא הצלחנו לטעון את הזיכרונות כרגע.";
       }
-    }
+
+      // ניקוי
+      delete window[cbName];
+      script.remove();
+    };
+
+    const script = document.createElement("script");
+    script.src = ENDPOINT + "?callback=" + cbName + "&_=" + Date.now(); // _= מונע cache
+    script.onerror = () => {
+      status.textContent = "לא הצלחנו לטעון את הזיכרונות כרגע.";
+      delete window[cbName];
+      script.remove();
+    };
+
+    document.head.appendChild(script);
+  } catch (e) {
+    status.textContent = "לא הצלחנו לטעון את הזיכרונות כרגע.";
+  }
+}
+
 
     loadMemories();
   </script>
