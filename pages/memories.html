@@ -13,10 +13,29 @@
   <style>
     .page { max-width: 980px; margin: 32px auto; padding: 0 16px; direction: rtl; text-align: right; }
     .memories-list { display: grid; gap: 14px; margin-top: 16px; }
-    .memory-card { border: 1px solid rgba(0,0,0,.08); border-radius: 14px; padding: 16px; background: #fff; box-shadow: 0 6px 18px rgba(0,0,0,.06); }
+    /* התאמה לעיצוב הכללי של האתר (רקע כהה + כרטיסיות שקופות) */
+    .memory-card {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      background: rgba(255,255,255,0.04);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+    }
     .memory-text { font-size: 1.05rem; line-height: 1.7; }
-    .memory-meta { margin-top: 10px; font-size: .95rem; opacity: .75; }
+    .memory-meta { margin-top: 10px; font-size: .95rem; color: var(--muted); display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
     .memory-name { font-weight: 700; }
+    .memory-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.03);
+      color: var(--muted);
+      font-size: .9rem;
+    }
+    .memory-pill i{width:7px;height:7px;border-radius:999px;background: linear-gradient(135deg, var(--accent), var(--accent-2));}
     .status { opacity:.75; }
   </style>
 </head>
@@ -53,7 +72,7 @@
 
   <script>
     // הדבק כאן את ה-URL של ה-Web App (Google Apps Script) שמחזיר JSON
-    const ENDPOINT = "https://script.google.com/macros/s/AKfycbyqjFv_xVMjMEg62OdcFvyw7PrZWVTKXDn8o44BTHVqJYb4QLIpPSKrW6tZpibAxFEM/exec";
+    const ENDPOINT = "https://script.google.com/macros/s/AKfycbxgtlJ3bGxHFrfVrMk6UFQoOpydes-BavwfisboBrTNDoon-B7ctDq3xFfgSi6XPSJc/exec";
 
     function escapeHtml(s) {
       return (s || '').replace(/[&<>"']/g, m => ({
@@ -86,7 +105,12 @@ function loadMemories() {
             <div class="memory-text">${escapeHtml(x.memory).replace(/\n/g,'<br>')}</div>
             <div class="memory-meta">
               <span class="memory-name">${escapeHtml(x.name || 'אנונימי')}</span>
-              ${x.relation ? `<span class="memory-rel">• ${escapeHtml(x.relation)}</span>` : ''}
+              ${x.relation ? `<span class="memory-pill"><i aria-hidden="true"></i>${escapeHtml(x.relation)}</span>` : ''}
+              ${x.timestamp ? `<span class="memory-pill"><i aria-hidden="true"></i>${escapeHtml(x.timestamp)}</span>` : ''}
+              ${Object.entries(x)
+                .filter(([k,v]) => v && !['memory','name','relation','timestamp'].includes(k))
+                .map(([k,v]) => `<span class="memory-pill"><i aria-hidden="true"></i>${escapeHtml(String(v))}</span>`)
+                .join('')}
             </div>
           </article>
         `).join('');
