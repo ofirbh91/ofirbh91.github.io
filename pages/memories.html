@@ -71,70 +71,116 @@
   </footer>
 
   <script>
-    // הדבק כאן את ה-URL של ה-Web App (Google Apps Script) שמחזיר JSON
-    const ENDPOINT = "https://script.google.com/macros/s/AKfycbwz8suYGAaGV9uSDdmrED3n9zgxXgUOUAghNSRpUG1Y1lAYyd004TAh7lzpYH1c5n6F/exec";
+    // ה-URL של ה-Web App (Google Apps Script) שמחזיר JSONP
+    const ENDPOINT = "https://script.google.com/macros/s/AKfycbxrjJwmABMLmZSxFfVIvVWpX0vMKvaDO_KJOp8qrRyQi4qwBU0IYGfljSIDgf8BpXWv/exec";
 
     function escapeHtml(s) {
-      return (s || '').replace(/[&<>"']/g, m => ({
+      return (s ?? '').toString().replace(/[&<>"']/g, m => ({
         '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
       }[m]));
     }
 
-function loadMemories() {
-  const status = document.getElementById('memoriesStatus');
-  const list = document.getElementById('memoriesList');
+    function loadMemories() {
+      const status = document.getElementById('memoriesStatus');
+      const list = document.getElementById('memoriesList');
 
-  try {
-    if (!ENDPOINT || ENDPOINT.includes("REPLACE_WITH")) {
-      status.textContent = "יש להגדיר ENDPOINT כדי להציג זיכרונות.";
-      return;
-    }
+      try {
+        if (!ENDPOINT || ENDPOINT.includes("REPLACE_WITH")) {
+          status.textContent = "יש להגדיר ENDPOINT כדי להציג זיכרונות.";
+          return;
+        }
 
-    const cbName = "memories_cb_" + Date.now();
+        // callback ייחודי + שבירת קאש חזקה
+        const cbName = "memories_cb_" + Date.now() + "_" + Math.floor(Math.random() * 1e9);
+        const cacheBust = Date.now() + "_" + Math.random().toString(16).slice(2);
 
-    // פונקציית callback שתיקרא ע"י השרת (JSONP)
-    window[cbName] = function (data) {
-      const items = (data && data.items) || [];
+        // יוצרים את הסקריפט לפני ההגדרה של הקולבק (כדי שנוכל script.remove בבטחה)
+        const script = document.createElement("script");
 
-      if (!items.length) {
-        status.textContent = "עדיין אין זיכרונות מאושרים להצגה.";
-      } else {
-        status.textContent = "";
-        list.innerHTML = items.map(x => `
-          <article class="memory-card">
-            <div class="memory-text">${escapeHtml(x.memory).replace(/\n/g,'<br>')}</div>
-            <div class="memory-meta">
-              ${x.name ? `<span class="memory-name">${escapeHtml(x.name)}</span>` : ''}
-              ${x.relation ? `<span class="memory-pill"><i aria-hidden="true"></i>${escapeHtml(x.relation)}</span>` : ''}
-              ${x.timestamp ? `<span class="memory-pill"><i aria-hidden="true"></i>${escapeHtml(x.timestamp)}</span>` : ''}
-              ${Object.entries(x)
-                .filter(([k,v]) => v && !['memory','name','relation','timestamp'].includes(k))
-                .map(([k,v]) => `<span class="memory-pill"><i aria-hidden="true"></i>${escapeHtml(String(v))}</span>`)
-                .join('')}
-            </div>
-          </article>
-        `).join('');
+        // שדות שלא מציגים בשום מצב (גם אם קיימים ב-JSON)
+        const NEVER_SHOW = new Set([
+          'Timestamp',
+          'timestamp',
+          'Approved',
+          'approved',
+          'אני מאשר/ת לפרסם את התוכן באתר. אני מתחייב/ת לא לכלול פרטים רגישים (טלפון/כתובת).',
+          'אני מאשר לפרסם',
+          'אישור פרסום'
+        ]);
+
+        // פונקציית callback שתיקרא ע"י השרת (JSONP)
+        window[cbName] = function (data) {
+          const items = (data && data.items) || [];
+
+          if (!items.length) {
+            status.textContent = "עדיין אין זיכרונות מאושרים להצגה.";
+            list.innerHTML = "";
+          } else {
+            status.textContent = "";
+
+            list.innerHTML = items.map(x => {
+              // תמיכה גם אם השדות מגיעים בעברית מה-Sheet
+              const memory = (x.memory || x['הזיכרון'] || '').toString().trim();
+              const name = (x.name || x['שם מלא'] || x['שם'] || '').toString().trim();
+              const relation = (x.relation || x['קשר למנוח/ה'] || x['קשר למנוח'] || '').toString().trim();
+
+              // אם אין זיכרון - לא מציגים כרטיס
+              if (!memory) return '';
+
+              // Extras: מציגים רק שדות נוספים שאינם חסומים ואינם שדות בסיסיים
+              const extras = Object.entries(x)
+                .filter(([k, v]) => v)
+                .filter(([k, _v]) => {
+                  const key = String(k).trim();
+                  // לא מציגים בשום מצב את החסומים
+                  if (NEVER_SHOW.has(key)) return false;
+                  // לא מציגים את שדות הבסיס/המקבילות בעברית
+                  return ![
+                    'memory','name','relation','timestamp',
+                    'הזיכרון','שם מלא','שם','קשר למנוח/ה','קשר למנוח','Timestamp','Approved'
+                  ].includes(key);
+                })
+                .map(([k, v]) => `<span class="memory-pill"><i aria-hidden="true"></i>${escapeHtml(String(v))}</span>`)
+                .join('');
+
+              // אין "אנונימי": מציגים מטא רק אם יש מה להציג
+              const metaParts = [];
+              if (name) metaParts.push(`<span class="memory-name">${escapeHtml(name)}</span>`);
+              if (relation) metaParts.push(`<span class="memory-pill"><i aria-hidden="true"></i>${escapeHtml(relation)}</span>`);
+              if (extras) metaParts.push(extras);
+
+              const metaHtml = metaParts.length
+                ? `<div class="memory-meta">${metaParts.join(' ')}</div>`
+                : '';
+
+              return `
+                <article class="memory-card">
+                  <div class="memory-text">${escapeHtml(memory).replace(/\n/g,'<br>')}</div>
+                  ${metaHtml}
+                </article>
+              `;
+            }).join('');
+          }
+
+          // ניקוי
+          delete window[cbName];
+          script.remove();
+        };
+
+        script.src = ENDPOINT + "?callback=" + cbName + "&nocache=" + encodeURIComponent(cacheBust);
+
+        script.onerror = (err) => {
+          console.error("JSONP load failed:", err, script.src);
+          status.textContent = "לא הצלחנו לטעון את הזיכרונות כרגע.";
+          delete window[cbName];
+          script.remove();
+        };
+
+        document.head.appendChild(script);
+      } catch (e) {
+        status.textContent = "לא הצלחנו לטעון את הזיכרונות כרגע.";
       }
-
-      // ניקוי
-      delete window[cbName];
-      script.remove();
-    };
-
-    const script = document.createElement("script");
-    script.src = ENDPOINT + "?callback=" + cbName + "&_=" + Date.now(); // _= מונע cache
-    script.onerror = () => {
-      status.textContent = "לא הצלחנו לטעון את הזיכרונות כרגע.";
-      delete window[cbName];
-      script.remove();
-    };
-
-    document.head.appendChild(script);
-  } catch (e) {
-    status.textContent = "לא הצלחנו לטעון את הזיכרונות כרגע.";
-  }
-}
-
+    }
 
     loadMemories();
   </script>
